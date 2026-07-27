@@ -1,0 +1,18 @@
+{
+  "name": "sisfisc-proxy-tcepe",
+  "version": "1.0.0",
+  "description": "Proxy Node.js para o painel SisFisc TCEPE — Jaboatão dos Guararapes (UJ 319)",
+  "main": "proxy.js",
+  "scripts": {
+    "start": "node proxy.js",
+    "dev": "node --watch proxy.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

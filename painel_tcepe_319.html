@@ -1,0 +1,1544 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acompanhamento das Recomendações · CGM — Jaboatão dos Guararapes</title>
+<script>
+// Aplica tema e tamanho de fonte salvos ANTES da renderização, evitando "flash" de tela clara/tamanho errado.
+(function () {
+  try {
+    var theme = localStorage.getItem('painel319_theme');
+    if (theme === 'dark' || (!theme && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark-theme');
+    }
+    if (localStorage.getItem('painel319_highcontrast') === '1') {
+      document.documentElement.classList.add('high-contrast');
+    }
+    var scale = localStorage.getItem('painel319_fontscale');
+    if (scale) {
+      document.documentElement.style.zoom = (parseInt(scale, 10) / 100);
+    }
+  } catch (e) {}
+})();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+:root {
+  --sidebar-w: 240px;
+  --topbar-h: 56px;
+  --navy: #0F2B4C;
+  --navy-light: #1A3F6F;
+  --navy-hover: #162F55;
+  --accent: #1B6FBF;
+  --accent-light: #E8F1FB;
+  --bg: #EDF1F7;
+  --surface: #FFFFFF;
+  --surface2: #F7F9FC;
+  --border: #DCE2EB;
+  --text-primary: #111827;
+  --text-secondary: #5A6473;
+  --text-muted: #9AA3AF;
+  --green: #1A8048;
+  --green-bg: #E6F5ED;
+  --blue: #1455A0;
+  --blue-bg: #E4EEF9;
+  --amber: #92510A;
+  --amber-bg: #FEF3E2;
+  --red: #B91C1C;
+  --red-bg: #FEE2E2;
+  --purple: #5B21B6;
+  --purple-bg: #EDE9FE;
+  --radius: 8px;
+  --radius-lg: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+}
+
+/* ── DARK MODE ── */
+html.dark-theme {
+  --navy: #0B1E36;
+  --navy-light: #14304F;
+  --navy-hover: #10263F;
+  --accent: #4DA3F5;
+  --accent-light: #16324F;
+  --bg: #0E1520;
+  --surface: #161F2E;
+  --surface2: #1B2536;
+  --border: #2A3648;
+  --text-primary: #E8EDF4;
+  --text-secondary: #9AA6B8;
+  --text-muted: #6B7688;
+  --green: #4ADE80;
+  --green-bg: #123422;
+  --blue: #5BA6F0;
+  --blue-bg: #10263F;
+  --amber: #F5B255;
+  --amber-bg: #3A2A0E;
+  --red: #F87171;
+  --red-bg: #3A1414;
+  --purple: #B39DF0;
+  --purple-bg: #2A1F45;
+  --shadow: 0 1px 3px rgba(0,0,0,.35), 0 1px 2px rgba(0,0,0,.3);
+  --shadow-md: 0 4px 14px rgba(0,0,0,.45);
+}
+html.dark-theme .logo-cgm,
+html.dark-theme .logo-pjg { background-color: #fff; }
+
+/* ── ALTO CONTRASTE ── */
+/* Paleta preto/branco/amarelo com contraste elevado (WCAG AAA), independente do modo claro/escuro */
+html.high-contrast {
+  --navy: #000000;
+  --navy-light: #000000;
+  --navy-hover: #1A1A1A;
+  --accent: #FFD400;
+  --accent-light: #000000;
+  --bg: #000000;
+  --surface: #000000;
+  --surface2: #0D0D0D;
+  --border: #FFFFFF;
+  --text-primary: #FFFFFF;
+  --text-secondary: #FFFFFF;
+  --text-muted: #FFD400;
+  --green: #00FF66;
+  --green-bg: #001A0A;
+  --blue: #66CCFF;
+  --blue-bg: #001A26;
+  --amber: #FFD400;
+  --amber-bg: #262000;
+  --red: #FF6B6B;
+  --red-bg: #260000;
+  --purple: #D9A6FF;
+  --purple-bg: #1A0026;
+  --shadow: none;
+  --shadow-md: none;
+}
+html.high-contrast .logo-cgm,
+html.high-contrast .logo-pjg { background-color: #fff; }
+html.high-contrast * { text-shadow: none !important; }
+html.high-contrast .card,
+html.high-contrast .kpi-card,
+html.high-contrast .section,
+html.high-contrast table,
+html.high-contrast th,
+html.high-contrast td,
+html.high-contrast input,
+html.high-contrast select,
+html.high-contrast .a11y-group,
+html.high-contrast .theme-toggle,
+html.high-contrast .a11y-btn,
+html.high-contrast .btn { border-color: var(--border) !important; }
+html.high-contrast a:focus-visible,
+html.high-contrast button:focus-visible,
+html.high-contrast input:focus-visible,
+html.high-contrast select:focus-visible { outline: 3px solid var(--accent) !important; outline-offset: 2px; }
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow-x: hidden; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-primary); font-size: 14px; transition: background-color .2s ease, color .2s ease; }
+
+/* ── LAYOUT ── */
+.app { display: flex; height: 100vh; overflow: hidden; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--navy);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  z-index: 50;
+}
+.sidebar-brand {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0));
+}
+.brand-sub  { font-size: 11px; color: rgba(255,255,255,.5); margin-top: 0; line-height: 1.4; }
+
+.sidebar-section { padding: 16px 12px 8px; }
+.sidebar-section-label {
+  font-size: 10px; font-weight: 600; color: rgba(255,255,255,.3);
+  text-transform: uppercase; letter-spacing: .08em;
+  padding: 0 8px; margin-bottom: 6px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: var(--radius);
+  color: rgba(255,255,255,.55); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all .15s; border: none; background: none; width: 100%; text-align: left;
+}
+.nav-item i { font-size: 18px; min-width: 20px; }
+.nav-item:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.9); }
+.nav-item.active {
+  background: rgba(27,111,191,.25);
+  color: #fff;
+  position: relative;
+}
+.nav-item.active::before {
+  content: '';
+  position: absolute; left: 0; top: 6px; bottom: 6px;
+  width: 3px; background: #4DA3F5; border-radius: 0 2px 2px 0;
+}
+.nav-badge {
+  margin-left: auto;
+  background: rgba(255,255,255,.12);
+  color: rgba(255,255,255,.7);
+  font-size: 10px; font-weight: 600;
+  padding: 2px 7px; border-radius: 10px;
+}
+.nav-badge.alert { background: #B91C1C; color: #fff; }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 14px 16px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  font-size: 11px; color: rgba(255,255,255,.3);
+  line-height: 1.6;
+}
+
+/* ── MAIN ── */
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
+
+.topbar {
+  height: var(--topbar-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 24px; gap: 12px;
+  flex-shrink: 0;
+}
+.topbar-crumb { font-size: 12px; color: var(--text-muted); }
+.topbar-crumb span { color: var(--text-primary); font-weight: 500; }
+.topbar-sep { color: var(--border); font-size: 16px; }
+.topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.topbar-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--accent-light); color: var(--accent);
+  padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;
+}
+.topbar-pill i { font-size: 14px; }
+
+/* ── CONTROLES DE ACESSIBILIDADE / TEMA ── */
+.a11y-group {
+  display: flex; align-items: center; gap: 2px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 2px; background: var(--surface2);
+}
+.a11y-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 28px; height: 26px; border-radius: 6px;
+  border: none; background: transparent; color: var(--text-secondary);
+  cursor: pointer; font-size: 13px; font-weight: 600; transition: all .15s;
+}
+.a11y-btn:hover { background: var(--accent-light); color: var(--accent); }
+.a11y-btn:disabled { opacity: .35; cursor: not-allowed; }
+.a11y-btn:disabled:hover { background: transparent; color: var(--text-secondary); }
+.a11y-btn i { font-size: 15px; }
+.a11y-label {
+  font-size: 10px; font-weight: 600; color: var(--text-muted);
+  min-width: 30px; text-align: center; user-select: none;
+}
+.theme-toggle {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--surface2); color: var(--text-secondary);
+  cursor: pointer; font-size: 15px; transition: all .15s;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.theme-toggle.active { background: var(--accent); border-color: var(--accent); color: #000; }
+.theme-toggle.active:hover { color: #000; }
+
+.content-area {
+  flex: 1; min-width: 0; overflow-y: auto; overflow-x: hidden; padding: 24px;
+}
+
+/* ── PANELS ── */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ── KPI ROW ── */
+.kpi-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; margin-bottom: 24px; }
+.kpi-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 18px 20px;
+  box-shadow: var(--shadow);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.kpi-card.accent-left { border-left: 3px solid var(--accent); }
+.kpi-card.accent-green { border-left: 3px solid #1A8048; }
+.kpi-card.accent-amber { border-left: 3px solid #D97706; }
+.kpi-card.accent-red   { border-left: 3px solid #B91C1C; }
+.kpi-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; }
+.kpi-val   { font-size: 30px; font-weight: 700; color: var(--text-primary); line-height: 1; }
+.kpi-sub   { font-size: 11px; color: var(--text-muted); }
+
+/* ── CHARTS GRID ── */
+.charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.chart-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 20px;
+  box-shadow: var(--shadow);
+}
+.chart-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.chart-title { font-size: 12px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: .06em; }
+.chart-total { font-size: 11px; color: var(--text-muted); background: var(--surface2); padding: 2px 8px; border-radius: 10px; }
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
+.bar-label { min-width: 150px; max-width: 150px; font-size: 12px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-track { flex: 1; background: var(--bg); border-radius: 4px; height: 10px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; transition: width .4s ease; }
+.bar-count { min-width: 22px; text-align: right; font-size: 12px; font-weight: 600; color: var(--text-primary); }
+
+/* ── TABLE AREA ── */
+.section-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.section-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.section-title { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.section-count { font-size: 12px; color: var(--text-muted); background: var(--surface2); border: 1px solid var(--border); padding: 2px 10px; border-radius: 10px; }
+.section-actions { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ── TOOLBAR ── */
+.toolbar {
+  padding: 12px 20px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+}
+.search-wrap { position: relative; flex: 1; min-width: 200px; }
+.search-wrap i {
+  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+  font-size: 16px; color: var(--text-muted); pointer-events: none;
+}
+.search-input {
+  width: 100%; height: 34px; padding: 0 10px 0 34px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text-primary); font-size: 13px;
+  outline: none; transition: border-color .15s;
+}
+.search-input:focus { border-color: var(--accent); }
+.filter-select {
+  height: 34px; padding: 0 10px; min-width: 165px;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text-secondary); font-size: 13px;
+  outline: none; cursor: pointer;
+}
+.filter-select:focus { border-color: var(--accent); }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 34px; padding: 0 14px; border-radius: var(--radius);
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  border: none; transition: all .15s;
+}
+.btn-outline {
+  background: var(--surface); border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+.btn-outline:hover { background: var(--bg); border-color: var(--accent); color: var(--accent); }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #155fa0; }
+.btn i { font-size: 16px; }
+
+/* ── TABLE ── */
+.table-wrap {
+  overflow-x: auto;
+  max-height: calc(100vh - 270px);
+  scrollbar-color: var(--accent) var(--accent-light);
+}
+.table-wrap::-webkit-scrollbar { height: 12px; }
+.table-wrap::-webkit-scrollbar-track { background: var(--accent-light); border-radius: 6px; }
+.table-wrap::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 6px;
+  border: 2px solid var(--accent-light);
+}
+.table-wrap::-webkit-scrollbar-thumb:hover { background: var(--navy-light); }
+table { width: 100%; min-width: 1180px; border-collapse: collapse; font-size: 13px; }
+thead th {
+  padding: 11px 14px;
+  text-align: left; font-size: 11px; font-weight: 600;
+  color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+tbody tr { border-bottom: 1px solid #F1F3F7; transition: background .1s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #F7F9FC; }
+tbody td { padding: 11px 14px; vertical-align: top; }
+tbody td.relatorio-cell { background: var(--surface2); border-right: 1px solid var(--border); }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; border-radius: 20px;
+  font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+.badge-other  { background: var(--bg); color: var(--text-secondary); white-space: normal; line-height: 1.4; }
+.badge-impl    { background: var(--green-bg); color: var(--green); }
+.badge-parcial { background: var(--amber-bg); color: var(--amber); }
+.badge-naoimpl { background: var(--red-bg); color: var(--red); }
+
+/* ── CONTENT CELL (texto longo com "ver mais") ── */
+.content-cell {
+  max-height: 52px; overflow: hidden; line-height: 1.55;
+  color: var(--text-secondary); position: relative;
+}
+.content-cell.expanded { max-height: none; }
+.content-fade {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 24px;
+  background: linear-gradient(transparent, #fff); pointer-events: none;
+}
+tbody tr:hover .content-fade { background: linear-gradient(transparent, #F7F9FC); }
+.expand-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 11px; color: var(--accent); padding: 3px 0; display: inline-flex; align-items: center; gap: 3px;
+}
+.expand-btn:hover { text-decoration: underline; }
+
+.proc-text { font-size: 13px; font-weight: 700; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+
+/* ── EMPTY ── */
+.empty-state {
+  padding: 48px 24px; text-align: center;
+  color: var(--text-muted);
+}
+.empty-state i { font-size: 40px; margin-bottom: 12px; display: block; opacity: .3; }
+.empty-state p { font-size: 14px; }
+
+/* ── RESULT COUNT ── */
+.result-info {
+  padding: 8px 20px;
+  font-size: 12px; color: var(--text-muted);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.result-info strong { color: var(--text-primary); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #CBD2DA; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #9AA3AF; }
+
+/* ── PLANILHA UPLOAD ── */
+.upload-zone {
+  margin: 40px auto; max-width: 520px;
+  border: 2px dashed var(--border); border-radius: var(--radius-lg);
+  padding: 48px 32px; text-align: center;
+  background: var(--surface2); cursor: pointer;
+  transition: all .15s;
+}
+.upload-zone:hover, .upload-zone.dragover {
+  border-color: var(--accent); background: var(--accent-light);
+}
+.upload-zone i { font-size: 40px; color: var(--accent); margin-bottom: 14px; display: block; }
+.upload-zone-title { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+.upload-zone-sub { font-size: 12px; color: var(--text-muted); }
+.upload-zone input[type=file] { display: none; }
+
+.planilha-divider {
+  display: flex; align-items: center; gap: 12px;
+  max-width: 520px; margin: 0 auto 24px; color: var(--text-muted); font-size: 12px;
+}
+.planilha-divider::before, .planilha-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+.google-sheet-box {
+  max-width: 520px; margin: 0 auto 40px;
+  border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 24px; background: var(--surface);
+}
+.google-sheet-box-title {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px;
+}
+.google-sheet-box-title i { color: var(--accent); font-size: 18px; }
+.google-sheet-box-sub { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px; }
+.google-sheet-input-row { display: flex; gap: 8px; }
+.google-sheet-input-row input { flex: 1; }
+.google-sheet-error {
+  margin-top: 10px; font-size: 12px; color: var(--red);
+  background: var(--red-bg); border-radius: 6px; padding: 8px 10px; line-height: 1.5;
+}
+.planilha-google-status {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--text-muted); margin-right: 4px;
+}
+.planilha-google-status i { color: var(--accent); font-size: 15px; }
+
+.planilha-meta {
+  padding: 10px 20px; background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  font-size: 12px; color: var(--text-secondary);
+}
+.planilha-meta i { color: var(--accent); }
+.planilha-meta strong { color: var(--text-primary); }
+.planilha-meta .spacer { margin-left: auto; display: flex; gap: 8px; }
+
+.filter-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 34px; padding: 0 14px; border-radius: var(--radius);
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary);
+  transition: all .15s;
+}
+.filter-toggle i { font-size: 15px; }
+.filter-toggle.active { background: var(--accent-light); border-color: var(--accent); color: var(--accent); }
+.filter-toggle:hover { border-color: var(--accent); }
+
+.logo-cgm {
+  display: block;
+  width: 100%;
+  max-width: 132px;
+  height: auto;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.28);
+}
+
+.logo-pjg {
+  display: block;
+  width: 100%;
+  max-width: 150px;
+  height: auto;
+  margin: 0 auto;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0,0,0,.28);
+  border-radius: 12px;
+}
+
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .sidebar { width: 56px; min-width: 56px; }
+  .sidebar-brand { padding: 14px 8px; gap: 0; }
+  .logo-cgm { max-width: 36px; padding: 4px; border-radius: 8px; }
+  .logo-pjg, .brand-name, .brand-sub, .sidebar-section-label, .nav-item span, .nav-badge, .sidebar-footer { display: none; }
+  .nav-item { justify-content: center; }
+  .topbar { padding: 0 16px; gap: 8px; }
+  .topbar-pill { display: none; }
+  .a11y-group { display: none; }
+  .content-area { padding: 18px; }
+  .kpi-row { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .charts-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .sidebar { width: 48px; min-width: 48px; }
+  .sidebar-brand { padding: 10px 4px; }
+  .logo-cgm { max-width: 28px; padding: 3px; border-radius: 6px; }
+  .nav-item { padding: 9px 6px; }
+  .nav-item i { font-size: 17px; min-width: 0; }
+  .topbar { padding: 0 10px; gap: 6px; }
+  .topbar-crumb { font-size: 11px; }
+  .a11y-label { display: none; }
+  .a11y-btn { width: 24px; }
+  #font-reset { display: none; }
+  .content-area { padding: 12px; }
+  .kpi-row { grid-template-columns: 1fr; gap: 8px; }
+  .kpi-card { padding: 14px 16px; }
+  .kpi-val { font-size: 24px; }
+  .section-header { padding: 12px 14px; }
+  .toolbar { padding: 10px 14px; }
+  .search-wrap { min-width: 100%; flex: 1 1 100%; }
+  .filter-select { flex: 1 1 100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+       <img src="./assets/CGM.png" alt="Logo CGM" class="logo-cgm">
+       <img src="./assets/logo-horizontal (1).png" alt="Logo PJG" class="logo-pjg">
+      <div class="brand-sub">Acompanhamento de Recomendações</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Painel</div>
+      <button class="nav-item active" id="nav-visao-geral" onclick="navigate('visao-geral', this)">
+        <i class="ti ti-layout-dashboard"></i>
+        <span>Visão Geral</span>
+      </button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Auditoria Interna</div>
+      <button class="nav-item" id="nav-planilha" onclick="navigate('planilha', this)">
+        <i class="ti ti-clipboard-check"></i>
+        <span>Acompanhamento das Recomendações</span>
+        <span class="nav-badge" id="nb-planilha">—</span>
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      CGM · Jaboatão dos Guararapes<br>
+      Relatórios de Auditoria Interna · <span id="mesAtual"></span>
+    </div>
+
+    <script>
+      const agora = new Date();
+      const mes = agora.toLocaleString('pt-BR', { month: 'short' }).replace('.', '');
+      const ano = agora.getFullYear();
+      document.getElementById('mesAtual').textContent = `${mes}/${ano}`;
+    </script>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <span class="topbar-crumb"><span class="topbar-sep">/</span> <span id="topbar-title">Visão Geral</span></span>
+      <div class="topbar-actions">
+        <div class="a11y-group" role="group" aria-label="Ajustar tamanho da fonte">
+          <button class="a11y-btn" id="font-decrease" onclick="changeFontSize(-10)" title="Diminuir tamanho da fonte" aria-label="Diminuir tamanho da fonte">
+            <i class="ti ti-minus"></i>
+          </button>
+          <span class="a11y-label" id="font-scale-label">100%</span>
+          <button class="a11y-btn" id="font-increase" onclick="changeFontSize(10)" title="Aumentar tamanho da fonte" aria-label="Aumentar tamanho da fonte">
+            <i class="ti ti-plus"></i>
+          </button>
+          <button class="a11y-btn" id="font-reset" onclick="resetFontSize()" title="Restaurar tamanho padrão da fonte" aria-label="Restaurar tamanho padrão da fonte">
+            <i class="ti ti-refresh"></i>
+          </button>
+        </div>
+
+        <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()" title="Alternar modo escuro/claro" aria-label="Alternar modo escuro/claro">
+          <i class="ti ti-moon" id="theme-toggle-icon"></i>
+        </button>
+
+        <button class="theme-toggle" id="contrast-toggle-btn" onclick="toggleHighContrast()" title="Ativar alto contraste" aria-label="Ativar alto contraste" aria-pressed="false">
+          <i class="ti ti-contrast" id="contrast-toggle-icon"></i>
+        </button>
+
+        <div class="topbar-pill"><i class="ti ti-building-community"></i> CGM · Jaboatão dos Guararapes</div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content-area">
+
+      <!-- VISÃO GERAL -->
+      <div class="panel active" id="panel-visao-geral">
+        <div class="kpi-row" id="kpi-row"></div>
+        <div class="charts-grid" id="charts-grid"></div>
+      </div>
+
+      <!-- ACOMPANHAMENTO DAS RECOMENDAÇÕES -->
+      <div class="panel" id="panel-planilha">
+        <div class="section-card">
+          <div class="section-header">
+            <i class="ti ti-clipboard-check" style="font-size:18px;color:var(--accent)"></i>
+            <span class="section-title">ACOMPANHAMENTO DAS RECOMENDAÇÕES</span>
+            <span class="section-count" id="planilha-count-badge" style="display:none">0 registros</span>
+            <div class="section-actions" id="planilha-header-actions" style="display:none">
+              <span id="planilha-google-status" class="planilha-google-status" style="display:none">
+                <i class="ti ti-brand-google-filled"></i> <span id="planilha-google-status-text"></span>
+              </span>
+              <button class="btn btn-outline" id="planilha-btn-atualizar" style="display:none" onclick="refreshGoogleSheet()">
+                <i class="ti ti-refresh"></i> Atualizar agora
+              </button>
+              <button class="btn btn-outline" id="planilha-btn-alterar-link" style="display:none" onclick="showTrocarGoogleSheetForm()">
+                <i class="ti ti-link"></i> Alterar link
+              </button>
+              <button class="btn btn-outline" id="planilha-btn-trocar" style="display:none" onclick="document.getElementById('planilha-file-input-2').click()">
+                <i class="ti ti-replace"></i> Trocar planilha
+              </button>
+              <button class="btn btn-primary" onclick="exportPlanilha()">
+                <i class="ti ti-file-spreadsheet"></i> Exportar Excel
+              </button>
+              <input type="file" id="planilha-file-input-2" accept=".xlsx,.xls" style="display:none" onchange="handlePlanilhaFile(this.files[0])">
+            </div>
+          </div>
+
+          <!-- UPLOAD (visível quando não há planilha carregada) -->
+          <div id="planilha-upload-container">
+            <div class="upload-zone" id="planilha-dropzone" onclick="document.getElementById('planilha-file-input').click()">
+              <i class="ti ti-file-upload"></i>
+              <div class="upload-zone-title">Envie a planilha de Acompanhamento das Recomendações</div>
+              <div class="upload-zone-sub">Clique aqui ou arraste o arquivo (.xlsx / .xls)</div>
+              <input type="file" id="planilha-file-input" accept=".xlsx,.xls" onchange="handlePlanilhaFile(this.files[0])">
+            </div>
+
+            <div class="planilha-divider"><span>ou</span></div>
+
+            <div class="google-sheet-box">
+              <div class="google-sheet-box-title"><i class="ti ti-brand-google-filled"></i> Conectar com Google Sheets</div>
+              <div class="google-sheet-box-sub">
+                Cole o link da planilha do Google Sheets. Ela precisa ter o acesso configurado como
+                "Qualquer pessoa com o link pode visualizar" (Compartilhar → Acesso geral). Se mesmo
+                assim o painel não conseguir ler os dados, publique a planilha na web
+                (Arquivo → Compartilhar → Publicar na Web → CSV) e cole o link gerado.
+              </div>
+              <div class="google-sheet-input-row">
+                <input type="text" id="google-sheet-url-input" class="search-input" style="padding-left:12px"
+                       value=""
+                       placeholder="https://docs.google.com/spreadsheets/d/....">
+                <button class="btn btn-primary" onclick="connectGoogleSheet()">
+                  <i class="ti ti-plug-connected"></i> Conectar
+                </button>
+              </div>
+              <div class="google-sheet-error" id="google-sheet-error" style="display:none"></div>
+            </div>
+          </div>
+
+          <!-- CONTEÚDO (visível quando há planilha carregada) -->
+          <div id="planilha-content-container" style="display:none">
+            <div class="planilha-meta" id="planilha-meta">
+              <i class="ti ti-file-spreadsheet"></i>
+              <span>Arquivo: <strong id="planilha-filename">—</strong></span>
+              <span>·</span>
+              <span>Carregado em: <strong id="planilha-savedat">—</strong></span>
+              <div class="spacer">
+                <button class="btn btn-outline" onclick="clearPlanilha()" title="Remover planilha carregada">
+                  <i class="ti ti-trash"></i> Remover
+                </button>
+              </div>
+            </div>
+            <div class="toolbar">
+              <div class="search-wrap">
+                <i class="ti ti-search"></i>
+                <input class="search-input" type="text" id="search-planilha" placeholder="Buscar por relatório, objeto, recomendação, situação..." oninput="renderPlanilhaTable()">
+              </div>
+              <select class="filter-select" id="filter-ano-planilha" onchange="renderPlanilhaTable()">
+                <option value="">Todos os anos do relatório</option>
+              </select>
+              <select class="filter-select" id="filter-situacao-planilha" onchange="renderPlanilhaTable()">
+                <option value="">Todas as situações</option>
+                <option value="impl">Implementado</option>
+                <option value="parcial">Parcialmente Implementado</option>
+                <option value="nao">Não Implementado</option>
+                <option value="outro">Em acompanhamento (outro)</option>
+                <option value="vazio">Não informado</option>
+              </select>
+            </div>
+            <div class="result-info" id="result-info-planilha"></div>
+            <div class="table-wrap">
+              <table id="table-planilha">
+                <thead>
+                  <tr>
+                    <th style="width:90px">Nº Relatório</th>
+                    <th style="width:70px">Ano</th>
+                    <th style="min-width:220px">Objeto do Relatório</th>
+                    <th style="min-width:280px">Descrição da Recomendação</th>
+                    <th style="width:110px">Prazo p/ Cumprir</th>
+                    <th style="width:190px">Situação</th>
+                    <th style="min-width:200px">Observação</th>
+                  </tr>
+                </thead>
+                <tbody id="tbody-planilha"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content-area -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════
+   ACOMPANHAMENTO DAS RECOMENDAÇÕES — CGM Jaboatão dos Guararapes
+   Painel 100% client-side: upload de planilha (.xlsx/.xls) ou
+   conexão com Google Sheets. Sem dependência de backend/proxy.
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── ESTADO ── */
+let RECS = [];   // array de recomendações já processadas (ffill dos campos mesclados)
+let PLANILHA_STATE = { filename: null, savedAt: null, source: null, sourceUrl: null, recs: [] };
+let PLANILHA_PI_FILTER_ACTIVE = false; // reservado
+
+const PLANILHA_CONFIG = {
+  STORAGE_KEY: 'cgm_recomendacoes_data',
+  // Link opcional de uma planilha do Google Sheets já publicada com o
+  // mesmo formato. Deixe em branco para exigir que o usuário conecte manualmente.
+  DEFAULT_GOOGLE_SHEET_URL: '',
+};
+
+/* ── NOMES DE COLUNA ESPERADOS NA PLANILHA ──────────────────
+   A planilha "Acomp.Recom.Relatórios de Audit" traz células
+   mescladas para Ano/Nº do Relatório/Objeto/Prazo/Observação
+   (um bloco por relatório, com várias recomendações embaixo).
+   Aceitamos algumas variações de grafia para cada coluna. */
+const PLANILHA_COLS = {
+  ANO        : ['Ano do Relatório', 'Ano do Relatorio', 'Ano'],
+  NUM        : ['Nº do Relatório', 'No do Relatório', 'Numero do Relatório', 'Número do Relatório', 'Nº Relatório'],
+  OBJETO     : ['Objeto'],
+  DESCRICAO  : ['Descrição da Determinação/Recomendação', 'Descricao da Determinacao/Recomendacao', 'Descrição da Recomendação', 'Recomendação', 'Determinação', 'Descrição'],
+  PRAZO      : ['Prazo para cumprir', 'Prazo'],
+  SITUACAO   : ['Situação', 'Situacao', 'Status'],
+  OBSERVACAO : ['Observação', 'Observacao', 'Obs'],
+};
+
+function normalizeHeaderKey(s) {
+  return String(s || '')
+    .replace(/\u00a0/g, ' ')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function findPlanilhaColumn(headers, targetName) {
+  const target = normalizeHeaderKey(targetName);
+  return headers.find(h => normalizeHeaderKey(h) === target) || null;
+}
+
+function resolveCol(headers, candidates) {
+  for (const c of candidates) {
+    const found = findPlanilhaColumn(headers, c);
+    if (found) return found;
+  }
+  return null;
+}
+
+/* ── LÊ UMA PLANILHA (SHEET) PARA { headers, rows } ──────────
+   Algumas planilhas trazem uma linha de título mesclada (ex.:
+   "ACOMPANHAMENTO DAS RECOMENDAÇÕES...") acima da linha real de
+   cabeçalhos. Em vez de assumir que a primeira linha já é o
+   cabeçalho, procuramos a primeira linha com pelo menos 3 células
+   preenchidas — a linha de título costuma ter só a 1ª coluna
+   preenchida (as demais ficam vazias pela mesclagem). */
+function sheetToRowObjects(sheet) {
+  const aoa = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '', raw: false, dateNF: 'dd/mm/yyyy' });
+  if (!aoa.length) return { headers: [], rows: [] };
+
+  let headerRowIdx = aoa.findIndex(r => r.filter(c => String(c ?? '').trim() !== '').length >= 3);
+  if (headerRowIdx === -1) headerRowIdx = 0;
+
+  const headers = aoa[headerRowIdx].map((h, i) => String(h ?? '').trim() || `Coluna ${i + 1}`);
+  const rows = aoa.slice(headerRowIdx + 1).map(r => {
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = r[i] !== undefined ? r[i] : ''; });
+    return obj;
+  });
+  return { headers, rows };
+}
+
+function escapeHtml(v) {
+  return String(v ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+/* ── CLASSIFICAÇÃO DA SITUAÇÃO ──────────────────────────────
+   A coluna "Situação" traz tanto valores padronizados
+   (Implementado / Parcialmente Implementado / Não Implementado)
+   quanto anotações livres (ex.: números de SEI, encaminhamentos
+   em análise). Classificamos para permitir filtro e badge colorido,
+   mas sempre preservando o texto original na célula. */
+function classifyStatus(text) {
+  const norm = normalizeHeaderKey(text);
+  if (!norm) return { label: 'Não informado', cls: 'badge-other', key: 'vazio' };
+  if (norm.includes('nao implementad')) return { label: 'Não Implementado', cls: 'badge-naoimpl', key: 'nao' };
+  if (norm.includes('parcialmente implementad')) return { label: 'Parcialmente Implementado', cls: 'badge-parcial', key: 'parcial' };
+  if (norm.includes('implementad')) return { label: 'Implementado', cls: 'badge-impl', key: 'impl' };
+  return { label: 'Em acompanhamento', cls: 'badge-other', key: 'outro' };
+}
+
+/* ── CONSTRÓI A LISTA DE RECOMENDAÇÕES A PARTIR DAS LINHAS CRUAS ──
+   Faz o "preenchimento para baixo" (fill-down) dos campos que na
+   planilha original estão mesclados por relatório (Ano, Nº do
+   Relatório, Objeto, Prazo e Observação), já que ao ler a planilha
+   apenas a célula-âncora de cada mesclagem vem preenchida. */
+function buildRecomendacoes(headers, rawRows) {
+  const colAno        = resolveCol(headers, PLANILHA_COLS.ANO);
+  const colNum         = resolveCol(headers, PLANILHA_COLS.NUM);
+  const colObjeto      = resolveCol(headers, PLANILHA_COLS.OBJETO);
+  const colDescricao   = resolveCol(headers, PLANILHA_COLS.DESCRICAO);
+  const colPrazo       = resolveCol(headers, PLANILHA_COLS.PRAZO);
+  const colSituacao    = resolveCol(headers, PLANILHA_COLS.SITUACAO);
+  const colObservacao  = resolveCol(headers, PLANILHA_COLS.OBSERVACAO);
+
+  let lastAno = '', lastNum = '', lastObjeto = '', lastPrazo = '', lastObservacao = '';
+  let groupIndex = -1;
+  const out = [];
+
+  rawRows.forEach(raw => {
+    const anoRaw        = colAno ? String(raw[colAno] ?? '').trim() : '';
+    const numRaw         = colNum ? String(raw[colNum] ?? '').trim() : '';
+    const objetoRaw      = colObjeto ? String(raw[colObjeto] ?? '').trim() : '';
+    const descricao       = colDescricao ? String(raw[colDescricao] ?? '').trim() : '';
+    const prazoRaw       = colPrazo ? String(raw[colPrazo] ?? '').trim() : '';
+    const situacao        = colSituacao ? String(raw[colSituacao] ?? '').trim() : '';
+    const observacaoRaw  = colObservacao ? String(raw[colObservacao] ?? '').trim() : '';
+
+    // Ignora linhas totalmente vazias (separadores eventuais na planilha)
+    if (!anoRaw && !numRaw && !objetoRaw && !descricao && !prazoRaw && !situacao && !observacaoRaw) return;
+
+    if (anoRaw) lastAno = anoRaw;
+    if (numRaw) lastNum = numRaw;
+    if (objetoRaw) lastObjeto = objetoRaw;
+    if (prazoRaw) lastPrazo = prazoRaw;
+    if (observacaoRaw) lastObservacao = observacaoRaw;
+
+    if (numRaw || anoRaw) groupIndex++;
+    if (groupIndex < 0) groupIndex = 0;
+
+    const numFormatted = lastNum ? (/^\d+$/.test(lastNum) ? lastNum.padStart(3, '0') : lastNum) : '';
+
+    out.push({
+      groupIndex,
+      ano: lastAno,
+      num: lastNum,
+      numFormatted,
+      objeto: lastObjeto,
+      descricao,
+      prazo: prazoRaw || lastPrazo,
+      situacao,
+      situacaoInfo: classifyStatus(situacao),
+      observacao: observacaoRaw || lastObservacao,
+    });
+  });
+
+  return out;
+}
+
+/* ── UPLOAD / PARSE DO ARQUIVO XLSX ── */
+function handlePlanilhaFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const wb = XLSX.read(data, { type: 'array', cellDates: true });
+      const firstSheetName = wb.SheetNames[0];
+      const sheet = wb.Sheets[firstSheetName];
+      const { headers, rows } = sheetToRowObjects(sheet);
+
+      const recs = buildRecomendacoes(headers, rows);
+      if (!recs.length) {
+        alert('A planilha foi lida, mas nenhuma recomendação foi reconhecida. Verifique se as colunas seguem o padrão "Ano do Relatório", "Nº do Relatório", "Objeto", "Descrição da Determinação/Recomendação", "Prazo para cumprir", "Situação" e "Observação".');
+      }
+
+      stopGoogleSheetAutoRefresh();
+      PLANILHA_STATE = {
+        filename: file.name,
+        savedAt: new Date().toISOString(),
+        source: 'file',
+        sourceUrl: null,
+        recs,
+      };
+      RECS = recs;
+      savePlanilhaToStorage();
+      renderPlanilhaPanel();
+    } catch (err) {
+      alert('Não foi possível ler a planilha. Verifique se o arquivo é um .xlsx/.xls válido.\n\n' + err.message);
+      console.error('[CGM][Planilha]', err);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+/* ── DRAG & DROP ── */
+(function setupPlanilhaDragDrop() {
+  const zone = document.getElementById('planilha-dropzone');
+  if (!zone) return;
+  ['dragenter', 'dragover'].forEach(evt =>
+    zone.addEventListener(evt, (e) => { e.preventDefault(); zone.classList.add('dragover'); }));
+  ['dragleave', 'drop'].forEach(evt =>
+    zone.addEventListener(evt, (e) => { e.preventDefault(); zone.classList.remove('dragover'); }));
+  zone.addEventListener('drop', (e) => {
+    const file = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (file) handlePlanilhaFile(file);
+  });
+})();
+
+/* ── PERSISTÊNCIA (localStorage) ── */
+function savePlanilhaToStorage() {
+  try {
+    localStorage.setItem(PLANILHA_CONFIG.STORAGE_KEY, JSON.stringify(PLANILHA_STATE));
+  } catch (err) {
+    console.error('[CGM][Planilha] Falha ao salvar no localStorage:', err);
+    alert('Não foi possível salvar a planilha localmente (arquivo pode ser muito grande para o armazenamento do navegador).');
+  }
+}
+
+function loadPlanilhaFromStorage() {
+  try {
+    const raw = localStorage.getItem(PLANILHA_CONFIG.STORAGE_KEY);
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !Array.isArray(parsed.recs)) return false;
+    PLANILHA_STATE = parsed;
+    return true;
+  } catch (err) {
+    console.error('[CGM][Planilha] Falha ao ler do localStorage:', err);
+    return false;
+  }
+}
+
+function clearPlanilha() {
+  const msg = PLANILHA_STATE.source === 'google'
+    ? 'Desconectar a planilha do Google Sheets? Você precisará colar o link novamente.'
+    : 'Remover a planilha carregada? Você precisará enviar o arquivo novamente.';
+  if (!confirm(msg)) return;
+  localStorage.removeItem(PLANILHA_CONFIG.STORAGE_KEY);
+  stopGoogleSheetAutoRefresh();
+  PLANILHA_STATE = { filename: null, savedAt: null, source: null, sourceUrl: null, recs: [] };
+  RECS = [];
+  renderPlanilhaPanel();
+}
+
+/* ── RENDER: painel geral (upload vs conteúdo) ── */
+function renderPlanilhaPanel() {
+  const hasData = RECS && RECS.length > 0;
+  document.getElementById('planilha-upload-container').style.display = hasData ? 'none' : 'block';
+  document.getElementById('planilha-content-container').style.display = hasData ? 'block' : 'none';
+  document.getElementById('planilha-header-actions').style.display = hasData ? 'flex' : 'none';
+  document.getElementById('planilha-count-badge').style.display = hasData ? 'inline-block' : 'none';
+  document.getElementById('nb-planilha').textContent = hasData ? RECS.length : '—';
+
+  const isGoogle = hasData && PLANILHA_STATE.source === 'google';
+  document.getElementById('planilha-btn-atualizar').style.display = isGoogle ? 'inline-flex' : 'none';
+  document.getElementById('planilha-btn-alterar-link').style.display = isGoogle ? 'inline-flex' : 'none';
+  document.getElementById('planilha-btn-trocar').style.display = (hasData && !isGoogle) ? 'inline-flex' : 'none';
+  document.getElementById('planilha-google-status').style.display = isGoogle ? 'inline-flex' : 'none';
+  if (isGoogle) {
+    document.getElementById('planilha-google-status-text').textContent =
+      'Sincroniza a cada ' + Math.round(GOOGLE_SHEET_AUTO_REFRESH_MS / 60000) + ' min';
+  }
+
+  if (hasData) {
+    document.getElementById('planilha-filename').textContent = PLANILHA_STATE.filename || '—';
+    document.getElementById('planilha-savedat').textContent = PLANILHA_STATE.savedAt
+      ? new Date(PLANILHA_STATE.savedAt).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' })
+      : '—';
+
+    populatePlanilhaAnoFilter();
+    renderPlanilhaTable();
+
+    if (isGoogle) startGoogleSheetAutoRefresh();
+  }
+
+  renderVisaoGeral();
+}
+
+/* ── GOOGLE SHEETS ── */
+const GOOGLE_SHEET_AUTO_REFRESH_MS = 5 * 60 * 1000;
+let _googleSheetAutoRefreshTimer = null;
+
+function parseGoogleSheetUrl(url) {
+  const idMatch = String(url || '').match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+  if (!idMatch) return null;
+  const gidMatch = String(url).match(/[?#&]gid=(\d+)/);
+  return { id: idMatch[1], gid: gidMatch ? gidMatch[1] : '0' };
+}
+
+function parsePublishedSheetUrl(url) {
+  const match = String(url || '').match(/spreadsheets\/d\/e\/([a-zA-Z0-9-_]+)/);
+  if (!match) return null;
+  const gidMatch = String(url).match(/[?#&]gid=(\d+)/);
+  return { key: match[1], gid: gidMatch ? gidMatch[1] : null };
+}
+
+function buildPublishedCsvUrl({ key, gid }) {
+  let out = `https://docs.google.com/spreadsheets/d/e/${key}/pub?output=csv`;
+  if (gid) out += `&gid=${gid}&single=true`;
+  return out;
+}
+
+function buildGoogleSheetUrls({ id, gid }) {
+  return [
+    `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:csv&gid=${gid}`,
+    `https://docs.google.com/spreadsheets/d/${id}/export?format=csv&gid=${gid}`,
+  ];
+}
+
+function showGoogleSheetError(msg) {
+  const el = document.getElementById('google-sheet-error');
+  if (!msg) { el.style.display = 'none'; el.textContent = ''; return; }
+  el.style.display = 'block';
+  el.textContent = msg;
+}
+
+async function tryFetchCsv(csvUrl) {
+  let res;
+  try {
+    res = await fetch(csvUrl);
+  } catch (err) {
+    return { ok: false, reason: 'network' };
+  }
+  if (!res.ok) {
+    return { ok: false, reason: 'http', status: res.status };
+  }
+  const csvText = await res.text();
+  if (/^\s*<!DOCTYPE html/i.test(csvText) || /accounts\.google\.com/i.test(csvText)) {
+    return { ok: false, reason: 'login' };
+  }
+  return { ok: true, csvText };
+}
+
+async function fetchGoogleSheetRows(sheetUrl) {
+  const published = parsePublishedSheetUrl(sheetUrl);
+  const info = published ? null : parseGoogleSheetUrl(sheetUrl);
+  if (!published && !info) {
+    throw new Error('Link inválido. Copie o link completo da barra de endereço com a planilha aberta no navegador.');
+  }
+
+  const candidates = published ? [buildPublishedCsvUrl(published)] : buildGoogleSheetUrls(info);
+  let lastReason = null;
+  let csvText = null;
+
+  for (const url of candidates) {
+    const result = await tryFetchCsv(url);
+    if (result.ok) { csvText = result.csvText; break; }
+    lastReason = result.reason;
+  }
+
+  if (csvText === null) {
+    if (lastReason === 'login') {
+      throw new Error('A planilha exige login para ser acessada. Vá em Compartilhar → Acesso geral e defina "Qualquer pessoa com o link" como Leitor.');
+    }
+    if (lastReason === 'network') {
+      throw new Error('O navegador bloqueou o acesso à planilha (CORS). Tente publicar a planilha na web: Arquivo → Compartilhar → Publicar na Web → selecione a aba → formato CSV → Publicar, e cole aqui o link gerado.');
+    }
+    throw new Error('A planilha não está acessível publicamente. Confira se o acesso está como "Qualquer pessoa com o link pode visualizar" e se o link/aba (gid) está correto.');
+  }
+
+  const wb = XLSX.read(csvText, { type: 'string' });
+  const sheet = wb.Sheets[wb.SheetNames[0]];
+  return sheetToRowObjects(sheet);
+}
+
+async function applyGoogleSheetUrl(url, { silent } = {}) {
+  const { headers, rows } = await fetchGoogleSheetRows(url);
+  const recs = buildRecomendacoes(headers, rows);
+  PLANILHA_STATE = {
+    filename: 'Google Sheets (sincronizado)',
+    savedAt: new Date().toISOString(),
+    source: 'google',
+    sourceUrl: url,
+    recs,
+  };
+  RECS = recs;
+  savePlanilhaToStorage();
+  renderPlanilhaPanel();
+  return true;
+}
+
+async function connectGoogleSheet() {
+  const input = document.getElementById('google-sheet-url-input');
+  const url = input.value.trim();
+  showGoogleSheetError(null);
+  if (!url) { showGoogleSheetError('Cole o link da planilha antes de conectar.'); return; }
+
+  try {
+    await applyGoogleSheetUrl(url);
+  } catch (err) {
+    showGoogleSheetError(err.message);
+    console.error('[CGM][Planilha][GoogleSheets]', err);
+  }
+}
+
+async function autoConnectDefaultGoogleSheet() {
+  const url = PLANILHA_CONFIG.DEFAULT_GOOGLE_SHEET_URL;
+  if (!url) return;
+  document.getElementById('google-sheet-url-input').value = url;
+  try {
+    await applyGoogleSheetUrl(url, { silent: true });
+  } catch (err) {
+    console.error('[CGM][Planilha][GoogleSheets] Falha na conexão automática:', err);
+    showGoogleSheetError('Não foi possível carregar a planilha oficial automaticamente: ' + err.message);
+  }
+}
+
+function showTrocarGoogleSheetForm() {
+  document.getElementById('planilha-content-container').style.display = 'none';
+  document.getElementById('planilha-upload-container').style.display = 'block';
+  document.getElementById('google-sheet-url-input').value = PLANILHA_STATE.sourceUrl || '';
+  showGoogleSheetError(null);
+}
+
+async function refreshGoogleSheet(silent) {
+  if (!PLANILHA_STATE.sourceUrl) return;
+  try {
+    const { headers, rows } = await fetchGoogleSheetRows(PLANILHA_STATE.sourceUrl);
+    const recs = buildRecomendacoes(headers, rows);
+    PLANILHA_STATE = { ...PLANILHA_STATE, recs, savedAt: new Date().toISOString() };
+    RECS = recs;
+    savePlanilhaToStorage();
+    renderPlanilhaPanel();
+  } catch (err) {
+    console.error('[CGM][Planilha][GoogleSheets] Falha ao atualizar:', err);
+    if (!silent) alert('Não foi possível atualizar a planilha agora: ' + err.message);
+  }
+}
+
+function startGoogleSheetAutoRefresh() {
+  if (_googleSheetAutoRefreshTimer) return;
+  _googleSheetAutoRefreshTimer = setInterval(() => refreshGoogleSheet(true), GOOGLE_SHEET_AUTO_REFRESH_MS);
+}
+
+function stopGoogleSheetAutoRefresh() {
+  if (_googleSheetAutoRefreshTimer) { clearInterval(_googleSheetAutoRefreshTimer); _googleSheetAutoRefreshTimer = null; }
+}
+
+/* ── FILTRO: Ano do Relatório (dropdown) ── */
+function populatePlanilhaAnoFilter() {
+  const sel = document.getElementById('filter-ano-planilha');
+  const current = sel.value;
+  while (sel.options.length > 1) sel.remove(1);
+
+  const anos = [...new Set(RECS.map(r => r.ano).filter(Boolean))].sort((a, b) => b.localeCompare(a));
+  anos.forEach(a => {
+    const o = document.createElement('option'); o.value = a; o.textContent = a; sel.appendChild(o);
+  });
+  if (anos.includes(current)) sel.value = current;
+}
+
+/* ── FILTRAGEM COMBINADA ── */
+function getFilteredRecs() {
+  const search = (document.getElementById('search-planilha').value || '').toLowerCase().trim();
+  const anoFilter = document.getElementById('filter-ano-planilha').value;
+  const situacaoFilter = document.getElementById('filter-situacao-planilha').value;
+
+  return RECS.filter(item => {
+    if (anoFilter && item.ano !== anoFilter) return false;
+    if (situacaoFilter && item.situacaoInfo.key !== situacaoFilter) return false;
+    if (search) {
+      const haystack = [item.ano, item.num, item.objeto, item.descricao, item.situacao, item.observacao]
+        .join(' ').toLowerCase();
+      if (!haystack.includes(search)) return false;
+    }
+    return true;
+  });
+}
+
+/* ── CÉLULA DE SITUAÇÃO ── */
+function situacaoCell(item) {
+  const info = item.situacaoInfo;
+  if (info.key === 'vazio') {
+    return '<span style="color:var(--text-muted);font-size:12px">—</span>';
+  }
+  return `<span class="badge ${info.cls}">${escapeHtml(info.key === 'outro' ? item.situacao : info.label)}</span>`;
+}
+
+/* ── RENDER: tabela agrupada por relatório (rowspan) ── */
+function renderPlanilhaTable() {
+  const filtered = getFilteredRecs();
+  const tbody = document.getElementById('tbody-planilha');
+
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="ti ti-search-off"></i><p>Nenhuma recomendação encontrada para os filtros aplicados.</p></div></td></tr>`;
+  } else {
+    let html = '';
+    let i = 0;
+    while (i < filtered.length) {
+      const g = filtered[i].groupIndex;
+      let j = i;
+      while (j < filtered.length && filtered[j].groupIndex === g) j++;
+      const group = filtered.slice(i, j);
+      const span = group.length;
+
+      group.forEach((item, idx) => {
+        const descUid = `desc-${g}-${idx}`;
+        html += '<tr>';
+        if (idx === 0) {
+          const objUid = `obj-${g}`;
+          html += `<td rowspan="${span}" class="relatorio-cell"><span class="proc-text">${escapeHtml(item.numFormatted || '—')}</span></td>`;
+          html += `<td rowspan="${span}" class="relatorio-cell" style="font-size:12px;color:var(--text-secondary)">${escapeHtml(item.ano || '—')}</td>`;
+          html += `<td rowspan="${span}" class="relatorio-cell">
+              <div class="content-cell" id="cc-${objUid}">${escapeHtml(item.objeto || '—')}</div>
+              <div class="content-fade" id="fade-${objUid}"></div>
+              <button class="expand-btn" onclick="toggleExpand('${objUid}')"><i class="ti ti-chevron-down" style="font-size:12px"></i>ver mais</button>
+            </td>`;
+        }
+        html += `<td>
+            <div class="content-cell" id="cc-${descUid}">${escapeHtml(item.descricao || '—')}</div>
+            <div class="content-fade" id="fade-${descUid}"></div>
+            <button class="expand-btn" onclick="toggleExpand('${descUid}')"><i class="ti ti-chevron-down" style="font-size:12px"></i>ver mais</button>
+          </td>`;
+        html += `<td style="font-size:12px;white-space:nowrap">${item.prazo ? escapeHtml(item.prazo) : '<span style="color:var(--text-muted)">—</span>'}</td>`;
+        html += `<td>${situacaoCell(item)}</td>`;
+        html += `<td style="font-size:12px;color:var(--text-secondary)">${item.observacao ? escapeHtml(item.observacao) : '—'}</td>`;
+        html += '</tr>';
+      });
+      i = j;
+    }
+    tbody.innerHTML = html;
+  }
+
+  const infoEl = document.getElementById('result-info-planilha');
+  const total = RECS.length;
+  infoEl.innerHTML = filtered.length === total
+    ? `Exibindo <strong>todas as ${total} recomendações</strong>`
+    : `Exibindo <strong>${filtered.length}</strong> de <strong>${total}</strong> recomendações`;
+
+  document.getElementById('planilha-count-badge').textContent = `${filtered.length} registros`;
+}
+
+/* ── EXPANDIR / RECOLHER TEXTO LONGO ── */
+function toggleExpand(uid) {
+  const el   = document.getElementById(`cc-${uid}`);
+  const fade = document.getElementById(`fade-${uid}`);
+  if (!el || !fade) return;
+  const btn  = fade.nextElementSibling;
+  const exp  = el.classList.toggle('expanded');
+  fade.style.display = exp ? 'none' : 'block';
+  btn.innerHTML = exp
+    ? '<i class="ti ti-chevron-up" style="font-size:12px"></i>ver menos'
+    : '<i class="ti ti-chevron-down" style="font-size:12px"></i>ver mais';
+}
+
+/* ── EXPORTAR (respeita filtros aplicados) ── */
+function exportPlanilha() {
+  const filtered = getFilteredRecs();
+  const rows = filtered.map(item => ({
+    'Ano do Relatório': item.ano,
+    'Nº do Relatório': item.numFormatted,
+    'Objeto': item.objeto,
+    'Descrição da Determinação/Recomendação': item.descricao,
+    'Prazo para cumprir': item.prazo,
+    'Situação': item.situacao,
+    'Observação': item.observacao,
+  }));
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Acompanhamento');
+  XLSX.writeFile(wb, 'acompanhamento_recomendacoes_cgm.xlsx');
+}
+
+/* ── VISÃO GERAL (KPIs + gráficos) ── */
+function pct(v, total) { return total ? Math.round(v / total * 100) : 0; }
+
+function renderVisaoGeral() {
+  if (!RECS.length) {
+    document.getElementById('kpi-row').innerHTML = '';
+    document.getElementById('charts-grid').innerHTML = `
+      <div class="section-card" style="grid-column:1/-1">
+        <div class="empty-state">
+          <i class="ti ti-file-spreadsheet"></i>
+          <p>Nenhuma planilha carregada ainda.</p>
+          <p style="margin-top:6px;font-size:12px">Acesse <strong>Acompanhamento das Recomendações</strong> para enviar o arquivo Excel ou conectar uma planilha do Google Sheets.</p>
+          <button class="btn btn-primary" style="margin-top:16px" onclick="navigate('planilha', document.getElementById('nav-planilha'))">
+            <i class="ti ti-upload"></i> Ir para Acompanhamento das Recomendações
+          </button>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const relatorios = new Set(RECS.map(r => r.ano + '|' + r.num));
+  const counts = { impl: 0, parcial: 0, nao: 0, outro: 0, vazio: 0 };
+  RECS.forEach(r => counts[r.situacaoInfo.key]++);
+
+  document.getElementById('kpi-row').innerHTML = `
+    <div class="kpi-card accent-left">
+      <div class="kpi-label">Relatórios de Auditoria</div>
+      <div class="kpi-val">${relatorios.size}</div>
+      <div class="kpi-sub">acompanhados nesta planilha</div>
+    </div>
+    <div class="kpi-card accent-left">
+      <div class="kpi-label">Recomendações</div>
+      <div class="kpi-val">${RECS.length}</div>
+      <div class="kpi-sub">itens acompanhados</div>
+    </div>
+    <div class="kpi-card accent-green">
+      <div class="kpi-label">Implementadas</div>
+      <div class="kpi-val">${counts.impl}</div>
+      <div class="kpi-sub">${pct(counts.impl, RECS.length)}% do total</div>
+    </div>
+    <div class="kpi-card accent-amber">
+      <div class="kpi-label">Parcialmente Implementadas</div>
+      <div class="kpi-val">${counts.parcial}</div>
+      <div class="kpi-sub">${pct(counts.parcial, RECS.length)}% do total</div>
+    </div>
+    <div class="kpi-card accent-red">
+      <div class="kpi-label">Não Implementadas</div>
+      <div class="kpi-val">${counts.nao}</div>
+      <div class="kpi-sub">${pct(counts.nao, RECS.length)}% do total</div>
+    </div>
+    <div class="kpi-card accent-left">
+      <div class="kpi-label">Em Acompanhamento</div>
+      <div class="kpi-val">${counts.outro + counts.vazio}</div>
+      <div class="kpi-sub">situação em texto livre ou não informada</div>
+    </div>
+  `;
+
+  const situacaoData = {
+    'Implementado': counts.impl,
+    'Parcialmente Implementado': counts.parcial,
+    'Não Implementado': counts.nao,
+    'Em acompanhamento / outro': counts.outro,
+    'Não informado': counts.vazio,
+  };
+  const situacaoColors = {
+    'Implementado': '#1A8048',
+    'Parcialmente Implementado': '#92510A',
+    'Não Implementado': '#B91C1C',
+    'Em acompanhamento / outro': '#1B6FBF',
+    'Não informado': '#9AA3AF',
+  };
+
+  const porAno = {};
+  RECS.forEach(r => { const k = r.ano || 'Sem ano'; porAno[k] = (porAno[k] || 0) + 1; });
+
+  function barChart(title, data, palette, total) {
+    const entries = Object.entries(data).filter(([, v]) => v > 0);
+    if (!entries.length) return '';
+    const max = Math.max(1, ...entries.map(([, v]) => v));
+    const rows = entries.sort((a, b) => b[1] - a[1]).map(([k, v]) => {
+      const color = palette[k] || '#1B6FBF';
+      const pctW = Math.round(v / max * 100);
+      return `<div class="bar-row">
+        <span class="bar-label" title="${escapeHtml(k)}">${escapeHtml(k)}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${pctW}%;background:${color}"></div></div>
+        <span class="bar-count">${v}</span>
+      </div>`;
+    }).join('');
+    return `<div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-title">${title}</span>
+        <span class="chart-total">${total} total</span>
+      </div>
+      ${rows}
+    </div>`;
+  }
+
+  document.getElementById('charts-grid').innerHTML =
+    barChart('Situação das Recomendações', situacaoData, situacaoColors, RECS.length) +
+    barChart('Recomendações por Ano do Relatório', porAno, {}, RECS.length);
+}
+
+/* ── NAVIGATION ── */
+const LABELS = {
+  'visao-geral': 'Visão Geral',
+  'planilha': 'ACOMPANHAMENTO DAS RECOMENDAÇÕES',
+};
+
+function navigate(name, btn) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.getElementById(`panel-${name}`).classList.add('active');
+  document.getElementById('topbar-title').textContent = LABELS[name] || name;
+}
+
+/* ── TEMA (MODO ESCURO) ── */
+const THEME_KEY = 'painel319_theme';
+
+function applyThemeIcon() {
+  const isDark = document.documentElement.classList.contains('dark-theme');
+  const icon = document.getElementById('theme-toggle-icon');
+  if (icon) icon.className = isDark ? 'ti ti-sun' : 'ti ti-moon';
+  const btn = document.getElementById('theme-toggle-btn');
+  if (btn) btn.title = isDark ? 'Alternar para modo claro' : 'Alternar para modo escuro';
+}
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.classList.toggle('dark-theme');
+  try { localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light'); } catch (e) {}
+  applyThemeIcon();
+}
+
+function initTheme() {
+  applyThemeIcon();
+}
+
+/* ── ACESSIBILIDADE — ALTO CONTRASTE ── */
+const HIGH_CONTRAST_KEY = 'painel319_highcontrast';
+
+function applyHighContrastState() {
+  const active = document.documentElement.classList.contains('high-contrast');
+  const btn = document.getElementById('contrast-toggle-btn');
+  if (btn) {
+    btn.classList.toggle('active', active);
+    btn.title = active ? 'Desativar alto contraste' : 'Ativar alto contraste';
+    btn.setAttribute('aria-label', btn.title);
+    btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+  }
+}
+
+function toggleHighContrast() {
+  const html = document.documentElement;
+  const active = html.classList.toggle('high-contrast');
+  try { localStorage.setItem(HIGH_CONTRAST_KEY, active ? '1' : '0'); } catch (e) {}
+  applyHighContrastState();
+}
+
+function initHighContrast() {
+  applyHighContrastState();
+}
+
+/* ── ACESSIBILIDADE — TAMANHO DA FONTE ── */
+const FONT_SCALE_KEY = 'painel319_fontscale';
+const FONT_SCALE_MIN = 80;
+const FONT_SCALE_MAX = 160;
+const FONT_SCALE_STEP = 10;
+
+function getCurrentFontScale() {
+  try {
+    const stored = localStorage.getItem(FONT_SCALE_KEY);
+    if (stored) return parseInt(stored, 10);
+  } catch (e) {}
+  return 100;
+}
+
+function applyFontScale(scale) {
+  document.documentElement.style.zoom = scale / 100;
+  const label = document.getElementById('font-scale-label');
+  if (label) label.textContent = scale + '%';
+  const decBtn = document.getElementById('font-decrease');
+  const incBtn = document.getElementById('font-increase');
+  if (decBtn) decBtn.disabled = scale <= FONT_SCALE_MIN;
+  if (incBtn) incBtn.disabled = scale >= FONT_SCALE_MAX;
+}
+
+function changeFontSize(delta) {
+  let scale = getCurrentFontScale() + delta;
+  scale = Math.max(FONT_SCALE_MIN, Math.min(FONT_SCALE_MAX, scale));
+  try { localStorage.setItem(FONT_SCALE_KEY, scale); } catch (e) {}
+  applyFontScale(scale);
+}
+
+function resetFontSize() {
+  try { localStorage.setItem(FONT_SCALE_KEY, 100); } catch (e) {}
+  applyFontScale(100);
+}
+
+function initFontSize() {
+  applyFontScale(getCurrentFontScale());
+}
+
+initTheme();
+initHighContrast();
+initFontSize();
+
+/* ── INIT ──
+   Restaura a última planilha trabalhada, se existir; caso contrário,
+   deixa a tela de upload / conexão com Google Sheets visível. */
+if (loadPlanilhaFromStorage() && PLANILHA_STATE.recs && PLANILHA_STATE.recs.length) {
+  RECS = PLANILHA_STATE.recs;
+  renderPlanilhaPanel();
+} else {
+  document.getElementById('nb-planilha').textContent = '—';
+  autoConnectDefaultGoogleSheet();
+  renderVisaoGeral();
+}
+</script>
+</body>
+</html>
